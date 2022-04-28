@@ -6,9 +6,10 @@ import sys
 from flask import Flask, request
 
 app = Flask(__name__)
-# FAQ답변, 단순이미지, 챗봇호출, 블록아이디, 챗봇소개, 메인메뉴, 자주하는 질문
+# FAQ답변, 단순이미지, 챗봇호출, 블록아이디, 챗봇소개, 메인메뉴, 자주하는 질문, FAQ자세히, 만족도조사, 별점나타내기
 blockIds = ['6243fdda43ba6c4de14f4034', '', '6262039504a7d7314aea1461', '62679f5045b5fc310644a6a7',
-            '6267872745b5fc3106449eb5', '6267b76716b99e0c3380399f', '6267d76116b99e0c33803b71', '62698aa99ac8ed7844158e2c']
+            '6267872745b5fc3106449eb5', '6267b76716b99e0c3380399f', '6267d76116b99e0c33803b71',
+            '62698aa99ac8ed7844158e2c', '626a23e116b99e0c3380681a', '626a241004a7d7314aeaa547']
 
 # 감정표현
 test_eval = [
@@ -88,6 +89,9 @@ faq_list = [
     ['회원가입', answer_list[17]],
 ]
 
+total_score, count = 0, 0
+
+#예시용 FAQ 답변 매칭
 def find_faq(utterance, title, descriptor):
     faq_list_example = ["SMS", "문자", "MMS", "비밀번호", "인증문자", "후불", "선불", "전송중", "수신거부", "서버", "SMS 서버"]
     if faq_list_example[0] in utterance:
@@ -279,7 +283,8 @@ def sayHello():
 
     title_List = []
     description_List = []
-
+    
+    #예시용 매칭된 FAQ 답변
     find_faq(_string, title_List, description_List)
     responseBody = {
         "version": "2.0",
@@ -295,8 +300,8 @@ def sayHello():
                         "type": "basicCard",
                         "items": [
                             {
-                                "title": title_List[0], # "FAQ1",
-                                "description": description_List[0], # "FAQ1 해당 내용",
+                                "title": title_List[0],  # "FAQ1",
+                                "description": description_List[0],  # "FAQ1 해당 내용",
                                 "thumbnail": {
                                     "imageUrl": "https://img1.daumcdn.net/thumb/R800x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2Fb7nRkz%2FbtqJDXMMc4B%2FqnBpNTJJMeE4P1tZL8PpDK%2Fimg.png"
                                 },
@@ -316,8 +321,8 @@ def sayHello():
                                 ]
                             },
                             {
-                                "title": title_List[1], # "FAQ2",
-                                "description": description_List[1], # "FAQ2 해당 내용",
+                                "title": title_List[1],  # "FAQ2",
+                                "description": description_List[1],  # "FAQ2 해당 내용",
                                 "thumbnail": {
                                     "imageUrl": "https://img1.daumcdn.net/thumb/R800x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2Fb7nRkz%2FbtqJDXMMc4B%2FqnBpNTJJMeE4P1tZL8PpDK%2Fimg.png"
                                 },
@@ -337,8 +342,8 @@ def sayHello():
                                 ]
                             },
                             {
-                                "title": title_List[2], # "FAQ3",
-                                "description": description_List[2], # "FAQ3 해당 내용",
+                                "title": title_List[2],  # "FAQ3",
+                                "description": description_List[2],  # "FAQ3 해당 내용",
                                 "thumbnail": {
                                     "imageUrl": "https://img1.daumcdn.net/thumb/R800x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2Fb7nRkz%2FbtqJDXMMc4B%2FqnBpNTJJMeE4P1tZL8PpDK%2Fimg.png"
                                 },
@@ -372,7 +377,7 @@ def sayHello():
                     "label": "만족도 조사",
                     "messageText": "만족도 조사",
                     "action": "block",
-                    "blockId": blockIds[5]
+                    "blockId": blockIds[8]
                 }
             ]
         }
@@ -397,37 +402,58 @@ def showFAQ():
             "outputs": [
 
                 {
-                    "simpleImage": {
-                        "imageUrl": "https://t1.daumcdn.net/friends/prod/category/M001_friends_ryan2.jpg",
-                        "altText": "hello I'm Ryan"
+                    "simpleText": {
+                        "text": "자주하는 질문 목록입니다."
                     }
+                    # "simpleImage": {
+                    #     "imageUrl": "https://t1.daumcdn.net/friends/prod/category/M001_friends_ryan2.jpg",
+                    #     "altText": "hello I'm Ryan"
+                    # }
                 }
 
             ],
             "quickReplies": [
                 {
-                    "messageText": "FAQ1",
+                    "messageText": "SMS",
                     "action": "message",
-                    # "blockId": blockIds[5],
-                    "label": "FAQ1"
+                    "blockId": blockIds[1],
+                    "label": "SMS"
                 },
                 {
                     "messageText": "FAQ2",
                     "action": "message",
                     # "blockId": blockIds[4],
-                    "label": "FAQ2"
+                    "label": "문자"
                 },
                 {
                     "messageText": "FAQ3",
                     "action": "message",
                     # "blockId": blockIds[4],
-                    "label": "FAQ3"
+                    "label": "MMS"
                 },
                 {
                     "messageText": "FAQ4",
                     "action": "message",
                     # "blockId": blockIds[4],
-                    "label": "FAQ4"
+                    "label": "비밀번호"
+                },
+                {
+                    "messageText": "FAQ4",
+                    "action": "message",
+                    # "blockId": blockIds[4],
+                    "label": "인증문자"
+                },
+                {
+                    "messageText": "FAQ4",
+                    "action": "message",
+                    # "blockId": blockIds[4],
+                    "label": "후불"
+                },
+                {
+                    "messageText": "FAQ4",
+                    "action": "message",
+                    # "blockId": blockIds[4],
+                    "label": "선불"
                 }
 
             ]
@@ -435,15 +461,18 @@ def showFAQ():
     }
     return responseBody
 
+
+# FAQ 자세한 답변
 @app.route('/api/FAQ_result', methods=['POST'])
 def FAQ_result():
     body = request.get_json()  # 봇 시스템 요청 body (SkillPayload)
     print(body)  # SkillPayload출력
     # userRequest = body.userRequest
     # blockId = body.block.id
-    blockId = body['userRequest']['block']['id']
-    descriptor = body['action']['clientExtra']['description']
+    blockId = body['userRequest']['block']['id']  # block id
     print(blockId)
+    descriptor = body['action']['clientExtra']['description']   # FAQ 답변에서 extra로 가져온 FAQ 본문
+    
     responseBody = {
         "version": "2.0",
         "template": {
@@ -452,6 +481,127 @@ def FAQ_result():
                     "simpleText": {
                         "text": descriptor
                     }
+                }
+            ],
+            "quickReplies": [
+                {
+                    "label": "처음으로",
+                    "messageText": "처음으로",
+                    "action": "block",
+                    "blockId": blockIds[4]
+                },
+                {
+                    "label": "만족도 조사",
+                    "messageText": "만족도 조사",
+                    "action": "block",
+                    "blockId": blockIds[8]
+                }
+            ]
+        }
+    }
+    return responseBody
+
+
+# 만족도 조사를 위한 block
+@app.route('/api/CSAT', methods=['POST'])
+def CSAT():
+    body = request.get_json()  # 봇 시스템 요청 body (SkillPayload)
+    print(body)  # SkillPayload출력
+
+    blockId = body['userRequest']['block']['id']  # block id
+    print(blockId)
+
+    _string = body['userRequest']['utterance']  # 사용자 발화
+    responseBody = {
+        "version": "2.0",
+        "template": {
+            "outputs": [
+                {
+                    "simpleText": {
+                        "text": "다음 보기중에 골라주세요!"
+                    }
+                }
+            ],
+            # 바로가기 버튼
+            "quickReplies": [
+                {
+                    "messageText": "5점",
+                    "action": "block",
+                    "blockId": blockIds[9],
+                    "label": "5점",
+                    "extra": {"score": 5}  # 선택한 블록으로 넘어가면서 점수를 전달함 (int형)
+                },
+                {
+                    "messageText": "4점",
+                    "action": "block",
+                    "blockId": blockIds[9],
+                    "label": "4점",
+                    "extra": {"score": 4}  # 선택한 블록으로 넘어가면서 점수를 전달함 (int형)
+                },
+                {
+                    "messageText": "3점",
+                    "action": "block",
+                    "blockId": blockIds[9],
+                    "label": "3점",
+                    "extra": {"score": 3}  # 선택한 블록으로 넘어가면서 점수를 전달함 (int형)
+                },
+                {
+                    "messageText": "2점",
+                    "action": "block",
+                    "blockId": blockIds[9],
+                    "label": "2점",
+                    "extra": {"score": 2}  # 선택한 블록으로 넘어가면서 점수를 전달함 (int형)
+                },
+                {
+                    "messageText": "1점",
+                    "action": "block",
+                    "blockId": blockIds[9],
+                    "label": "1점",
+                    "extra": {"score": 1}  # 선택한 블록으로 넘어가면서 점수를 전달함 (int형)
+                },
+                {
+                    "messageText": "0점",
+                    "action": "block",
+                    "blockId": blockIds[9],
+                    "label": "0점",
+                    "extra": {"score": 0}  # 선택한 블록으로 넘어가면서 점수를 전달함 (int형)
+                }
+            ]
+        }
+    }
+    return responseBody
+
+
+# 별점을 입력하기 위한 block
+@app.route('/api/CSAT_result', methods=['POST'])
+def CSAT_result():
+    global total_score, count
+    body = request.get_json()  # 봇 시스템 요청 body (SkillPayload)
+    print(body)  # SkillPayload출력
+
+    blockId = body['userRequest']['block']['id']  # block id
+    print(blockId)
+
+    score = body['action']['clientExtra']['score']  # 만족도 조사에서 입력된 점수(int형)
+    count += 1  # 횟수 추가
+    total_score = (total_score + score) / count  # 평균 별점
+    print(total_score)
+    responseBody = {
+        "version": "2.0",
+        "template": {
+            "outputs": [
+                {
+                    "simpleText": {
+                        "text": str(score) + "점이 입력되었습니다.\n감사합니다."
+                    }
+                }
+            ],
+            "quickReplies": [
+                {
+                    "label": "처음으로",
+                    "messageText": "처음으로",
+                    "action": "block",
+                    "blockId": blockIds[4]
                 }
             ]
         }
