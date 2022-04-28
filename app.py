@@ -17,6 +17,11 @@ blockIds = ['6243fdda43ba6c4de14f4034', '', '6262039504a7d7314aea1461', '62679f5
             '6267872745b5fc3106449eb5', '6267b76716b99e0c3380399f', '6267d76116b99e0c33803b71',
             '62698aa99ac8ed7844158e2c', '626a23e116b99e0c3380681a', '626a241004a7d7314aeaa547']
 
+# Sub 블록아이디
+# blockIds = ['6243fdda43ba6c4de14f4034', '', '6262039504a7d7314aea1461', '62679f5045b5fc310644a6a7',
+#             '6267872745b5fc3106449eb5', '6267b76716b99e0c3380399f', '6267d76116b99e0c33803b71',
+#             '62698aa99ac8ed7844158e2c', '626a23e116b99e0c3380681a', '626a241004a7d7314aeaa547']
+
 # 감정표현
 test_eval = [
     "대단히 죄송합니다.",  # 공포
@@ -129,33 +134,6 @@ def mainMenu():
                     }
                 }
             ],
-            # "quickReplies": [
-            #     {
-            #         "messageText": "제품 검색",
-            #         "action": "block",
-            #         "blockId": blockIds[5],
-            #         "label": "제품 검색"
-            #     },
-            #     {
-            #         "messageText": "제품 추천",
-            #         "action": "block",
-            #         "blockId": blockIds[4],
-            #         "label": "제품 추천"
-            #     },
-            #     {
-            #         "messageText": "이벤트 안내",
-            #         "action": "block",
-            #         "blockId": blockIds[4],
-            #         "label": "이벤트 안내"
-            #     },
-            #     {
-            #         "messageText": "자주하는 질문",
-            #         "action": "block",
-            #         "blockId": blockIds[4],
-            #         "label": "자주하는 질문"
-            #     }
-            #
-            # ]
         }
     }
     return responseBody
@@ -290,106 +268,127 @@ def sayHello():
 
     title_List = []
     description_List = []
-
+    responseBody = {}
     # 예시용 매칭된 FAQ 답변
     find_faq(_string, title_List, description_List)
-    responseBody = {
-        "version": "2.0",
-        "template": {
-            "outputs": [
-                {
-                    "simpleText": {
-                        "text": "입력하신 내용에서 \"" + test_eval[1] + "\" 느껴집니다.\n문의하신 \"" + _string + "\" 에 대한 FAQ 답변입니다."
+    if len(title_List) == 0 or len(description_List) == 0:
+        responseBody = {
+            "version": "2.0",
+            "template": {
+                "outputs": [
+                    {
+                        "simpleText": {
+                            "text": "고객님 궁금하신 내용을 구체적으로 질문해 주시면\n더 정확한 답을 찾아볼게요~"
+                        }
                     }
-                },
-                {
-                    "carousel": {
-                        "type": "basicCard",
-                        "items": [
-                            {
-                                "title": title_List[0],  # "FAQ1",
-                                "description": description_List[0],  # "FAQ1 해당 내용",
-                                "thumbnail": {
-                                    "imageUrl": "https://img1.daumcdn.net/thumb/R800x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2Fb7nRkz%2FbtqJDXMMc4B%2FqnBpNTJJMeE4P1tZL8PpDK%2Fimg.png"
-                                },
-                                "buttons": [
-                                    {
-                                        "label": "자세히 보기",
-                                        "messageText": "자세히 보기",
-                                        "action": "block",
-                                        "blockId": blockIds[7],
-                                        "extra": {"description": description_List[0]}
-                                    },
-                                    {
-                                        "action": "webLink",
-                                        "label": "홈페이지로 이동",
-                                        "webLinkUrl": "https://www.uplus.co.kr/css/orub/erms/FaqList.hpi"
-                                    }
-                                ]
-                            },
-                            {
-                                "title": title_List[1],  # "FAQ2",
-                                "description": description_List[1],  # "FAQ2 해당 내용",
-                                "thumbnail": {
-                                    "imageUrl": "https://img1.daumcdn.net/thumb/R800x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2Fb7nRkz%2FbtqJDXMMc4B%2FqnBpNTJJMeE4P1tZL8PpDK%2Fimg.png"
-                                },
-                                "buttons": [
-                                    {
-                                        "label": "자세히 보기",
-                                        "messageText": "자세히 보기",
-                                        "action": "block",
-                                        "blockId": blockIds[7],
-                                        "extra": {"description": description_List[1]}
-                                    },
-                                    {
-                                        "action": "webLink",
-                                        "label": "홈페이지로 이동",
-                                        "webLinkUrl": "https://www.uplus.co.kr/css/orub/erms/FaqList.hpi"
-                                    }
-                                ]
-                            },
-                            {
-                                "title": title_List[2],  # "FAQ3",
-                                "description": description_List[2],  # "FAQ3 해당 내용",
-                                "thumbnail": {
-                                    "imageUrl": "https://img1.daumcdn.net/thumb/R800x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2Fb7nRkz%2FbtqJDXMMc4B%2FqnBpNTJJMeE4P1tZL8PpDK%2Fimg.png"
-                                },
-                                "buttons": [
-                                    {
-                                        "label": "자세히 보기",
-                                        "messageText": "자세히 보기",
-                                        "action": "block",
-                                        "blockId": blockIds[7],
-                                        "extra": {"description": description_List[2]}
-                                    },
-                                    {
-                                        "action": "webLink",
-                                        "label": "홈페이지로 이동",
-                                        "webLinkUrl": "https://www.uplus.co.kr/css/orub/erms/FaqList.hpi"
-                                    }
-                                ]
-                            }
-                        ]
-                    }
-                }
-            ],
-            "quickReplies": [
-                {
-                    "label": "처음으로",
-                    "messageText": "처음으로",
-                    "action": "block",
-                    "blockId": blockIds[4]
-                },
-                {
-                    "label": "만족도 조사",
-                    "messageText": "만족도 조사",
-                    "action": "block",
-                    "blockId": blockIds[8]
-                }
-            ]
+                ],
+                # "quickReplies": [
+                #     {
+                #         "label": "처음으로",
+                #         "messageText": "처음으로",
+                #         "action": "block",
+                #         "blockId": blockIds[4]
+                #     }
+                # ]
+            }
         }
-    }
-
+    else:
+        responseBody = {
+            "version": "2.0",
+            "template": {
+                "outputs": [
+                    {
+                        "simpleText": {
+                            "text": "입력하신 내용에서 \"" + test_eval[1] + "\" 느껴집니다.\n문의하신 \"" + _string + "\" 에 대한 FAQ 답변입니다."
+                        }
+                    },
+                    {
+                        "carousel": {
+                            "type": "basicCard",
+                            "items": [
+                                {
+                                    "title": title_List[0],  # "FAQ1",
+                                    "description": description_List[0],  # "FAQ1 해당 내용",
+                                    "thumbnail": {
+                                        "imageUrl": "https://img1.daumcdn.net/thumb/R800x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2Fb7nRkz%2FbtqJDXMMc4B%2FqnBpNTJJMeE4P1tZL8PpDK%2Fimg.png"
+                                    },
+                                    "buttons": [
+                                        {
+                                            "label": "자세히 보기",
+                                            "messageText": "자세히 보기",
+                                            "action": "block",
+                                            "blockId": blockIds[7],
+                                            "extra": {"description": description_List[0]}
+                                        },
+                                        {
+                                            "action": "webLink",
+                                            "label": "홈페이지로 이동",
+                                            "webLinkUrl": "https://www.uplus.co.kr/css/orub/erms/FaqList.hpi"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "title": title_List[1],  # "FAQ2",
+                                    "description": description_List[1],  # "FAQ2 해당 내용",
+                                    "thumbnail": {
+                                        "imageUrl": "https://img1.daumcdn.net/thumb/R800x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2Fb7nRkz%2FbtqJDXMMc4B%2FqnBpNTJJMeE4P1tZL8PpDK%2Fimg.png"
+                                    },
+                                    "buttons": [
+                                        {
+                                            "label": "자세히 보기",
+                                            "messageText": "자세히 보기",
+                                            "action": "block",
+                                            "blockId": blockIds[7],
+                                            "extra": {"description": description_List[1]}
+                                        },
+                                        {
+                                            "action": "webLink",
+                                            "label": "홈페이지로 이동",
+                                            "webLinkUrl": "https://www.uplus.co.kr/css/orub/erms/FaqList.hpi"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "title": title_List[2],  # "FAQ3",
+                                    "description": description_List[2],  # "FAQ3 해당 내용",
+                                    "thumbnail": {
+                                        "imageUrl": "https://img1.daumcdn.net/thumb/R800x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2Fb7nRkz%2FbtqJDXMMc4B%2FqnBpNTJJMeE4P1tZL8PpDK%2Fimg.png"
+                                    },
+                                    "buttons": [
+                                        {
+                                            "label": "자세히 보기",
+                                            "messageText": "자세히 보기",
+                                            "action": "block",
+                                            "blockId": blockIds[7],
+                                            "extra": {"description": description_List[2]}
+                                        },
+                                        {
+                                            "action": "webLink",
+                                            "label": "홈페이지로 이동",
+                                            "webLinkUrl": "https://www.uplus.co.kr/css/orub/erms/FaqList.hpi"
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    }
+                ],
+                "quickReplies": [
+                    {
+                        "label": "처음으로",
+                        "messageText": "처음으로",
+                        "action": "block",
+                        "blockId": blockIds[4]
+                    },
+                    {
+                        "label": "만족도 조사",
+                        "messageText": "만족도 조사",
+                        "action": "block",
+                        "blockId": blockIds[8]
+                    }
+                ]
+            }
+        }
     return responseBody
 
 
