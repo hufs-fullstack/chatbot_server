@@ -5,6 +5,12 @@ import os
 import sys
 from flask import Flask, request
 
+##추가된 내용##
+# 1.자주하는 질문 목록 -> SMS만 구현
+# 2.FAQ답변이 76글자수로 제한 되어 있어 FAQ를 자세히 설명하는 block을 만듬
+# 3.만족도 조사 -> 별점 나타내기로 연결
+# 4.별점 나타내기에서는 입력된 점수를 보여주고 감사합니다로 마무리
+
 app = Flask(__name__)
 # FAQ답변, 단순이미지, 챗봇호출, 블록아이디, 챗봇소개, 메인메뉴, 자주하는 질문, FAQ자세히, 만족도조사, 별점나타내기
 blockIds = ['6243fdda43ba6c4de14f4034', '', '6262039504a7d7314aea1461', '62679f5045b5fc310644a6a7',
@@ -91,7 +97,8 @@ faq_list = [
 
 total_score, count = 0, 0
 
-#예시용 FAQ 답변 매칭
+
+# 예시용 FAQ 답변 매칭
 def find_faq(utterance, title, descriptor):
     faq_list_example = ["SMS", "문자", "MMS", "비밀번호", "인증문자", "후불", "선불", "전송중", "수신거부", "서버", "SMS 서버"]
     if faq_list_example[0] in utterance:
@@ -283,8 +290,8 @@ def sayHello():
 
     title_List = []
     description_List = []
-    
-    #예시용 매칭된 FAQ 답변
+
+    # 예시용 매칭된 FAQ 답변
     find_faq(_string, title_List, description_List)
     responseBody = {
         "version": "2.0",
@@ -471,8 +478,8 @@ def FAQ_result():
     # blockId = body.block.id
     blockId = body['userRequest']['block']['id']  # block id
     print(blockId)
-    descriptor = body['action']['clientExtra']['description']   # FAQ 답변에서 extra로 가져온 FAQ 본문
-    
+    descriptor = body['action']['clientExtra']['description']  # FAQ 답변에서 extra로 가져온 FAQ 본문
+
     responseBody = {
         "version": "2.0",
         "template": {
