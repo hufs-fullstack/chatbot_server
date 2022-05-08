@@ -1,9 +1,7 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
 import os
 import sys
 from flask import Flask, request
+from inference.find_faq import find_faq
 
 ##추가된 내용##
 # 1.자주하는 질문 목록 -> SMS만 구현
@@ -14,18 +12,13 @@ from flask import Flask, request
 app = Flask(__name__)
 # FAQ답변, 단순이미지, 챗봇호출, 블록아이디, 챗봇소개, 메인메뉴, 자주하는 질문, FAQ자세히, 만족도조사, 별점나타내기
 # Main 블록아이디
-blockIds = ['6243fdda43ba6c4de14f4034', '', '6262039504a7d7314aea1461', '62679f5045b5fc310644a6a7',
-            '6267872745b5fc3106449eb5', '6267b76716b99e0c3380399f', '6267d76116b99e0c33803b71',
-            '62698aa99ac8ed7844158e2c', '626a23e116b99e0c3380681a', '626a241004a7d7314aeaa547']
-# Sub 블록아이디
 # blockIds = ['6243fdda43ba6c4de14f4034', '', '6262039504a7d7314aea1461', '62679f5045b5fc310644a6a7',
 #             '6267872745b5fc3106449eb5', '6267b76716b99e0c3380399f', '6267d76116b99e0c33803b71',
 #             '62698aa99ac8ed7844158e2c', '626a23e116b99e0c3380681a', '626a241004a7d7314aeaa547']
-
 # Sub 블록아이디
-# blockIds = ['6243fdda43ba6c4de14f4034', '', '6262039504a7d7314aea1461', '62679f5045b5fc310644a6a7',
-#             '6267872745b5fc3106449eb5', '6267b76716b99e0c3380399f', '6267d76116b99e0c33803b71',
-#             '62698aa99ac8ed7844158e2c', '626a23e116b99e0c3380681a', '626a241004a7d7314aeaa547']
+blockIds = ['', '', '', '62679f5045b5fc310644a6a7',
+            '626a27ed9ac8ed7844159a13', '626a23e116b99e0c3380681c', '626a28059ac8ed7844159a1f',
+            '626a3b4504a7d7314aeaab34', '626a3b5e04a7d7314aeaab36', '626a3b7545b5fc310644de6a']
 
 # 감정표현
 test_eval = [
@@ -108,16 +101,16 @@ faq_list = [
 total_score, count = 0, 0
 
 
-# 예시용 FAQ 답변 매칭
-def find_faq(utterance, title, descriptor):
-    faq_list_example = ["SMS", "문자", "MMS", "비밀번호", "인증문자", "후불", "선불", "전송중", "수신거부", "서버", "SMS 서버"]
-    if faq_list_example[0] in utterance:
-        title.append(faq_list[0][0])
-        descriptor.append(answer_list[0])
-        title.append(faq_list[1][0])
-        descriptor.append(answer_list[1])
-        title.append(faq_list[3][0])
-        descriptor.append(answer_list[2])
+# # 예시용 FAQ 답변 매칭
+# def find_faq(utterance, title, descriptor):
+#     faq_list_example = ["SMS", "문자", "MMS", "비밀번호", "인증문자", "후불", "선불", "전송중", "수신거부", "서버", "SMS 서버"]
+#     if faq_list_example[0] in utterance:
+#         title.append(faq_list[0][0])
+#         descriptor.append(answer_list[0])
+#         title.append(faq_list[1][0])
+#         descriptor.append(answer_list[1])
+#         title.append(faq_list[3][0])
+#         descriptor.append(answer_list[2])
 
 
 # 메인 메뉴
