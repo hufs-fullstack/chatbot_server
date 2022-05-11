@@ -1,20 +1,17 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from flask import Flask, request
+from flask import Flask, request, render_template
 import model
+import csv
+import pandas as pd
 
 # import 모델.py
 
 ##변경된 내용##
-# 1.자주하는 질문 목록 -> 삭제
-# 2.block id 개선
-# 3.FAQ 재질문 처리에서 사용자의 감정 분석 및 재질문 처리 -> FAQ 답변 처리에 답변을 넘김
-# 4.FAQ 재질문 처리에서 온 정보를 카드 형식으로 나타냄(3개에서 1개로 바꿈 -> 유사도 이슈로)
-# 5.단위 테스트를 위한 홈페이지 제작은 아직 미완성
-# 6.모델에 챗봇 api를 올리기 위해서는 import 부분을 수정하면 됨
-# 7.추가로 핵십문장(requestion1 = faq_data['summary'][result_loc] + '에 관한 질문이신가요?')처리에서 summary 부분을 추출하여
-# FAQ 제목으로 쓰려고 함.
+# 1. 별점, 사용자 문의 CSV 저장 코드 추가
+# 2. 테스트 템플릿 화면(index.html) 추가
+# 3. 템플릿으로 CSV 내용 보내는 코드 추가 : def result()
 
 app = Flask(__name__)
 # 챗봇 intro, 처음으로 이동, FAQ 재질문 처리, FAQ 답변 처리, FAQ 자세히 보기, 만족도조사, 별점나타내기
@@ -23,13 +20,20 @@ blockIds = ['6267872745b5fc3106449eb5', '6267b76716b99e0c3380399f', '6267d76116b
             '626a241004a7d7314aeaa547']
 
 # Sub 블록아이디
-# blockIds = ['6243fdda43ba6c4de14f4034', '', '6262039504a7d7314aea1461', '62679f5045b5fc310644a6a7',
-#             '6267872745b5fc3106449eb5', '6267b76716b99e0c3380399f', '6267d76116b99e0c33803b71',
-#             '62698aa99ac8ed7844158e2c', '626a23e116b99e0c3380681a', '626a241004a7d7314aeaa547']
+# blockIds = ['626a23e116b99e0c3380681c','627a68ea9ac8ed7844165962', '627a690a04a7d7314aeb7235', 
+#             '627a69269ac8ed7844165966','627a694604a7d7314aeb7238', '626a3b5e04a7d7314aeaab36', 
+#             '626a3b7545b5fc310644de6a']
 
 total_score = 0
 count = 0
 
+# 별점 CSV 파일(rating.csv) 초기화 - 처음 환경 세팅 시에만 사용, 이후에는 주석 처리하여 사용
+# df1 = pd.DataFrame({'rating' : [1, 2, 3, 4, 5], 'count' : [0, 0, 0, 0, 0]})
+# df1.to_csv('rating.csv')
+
+# 사용자 문의 CSV 파일(voc.csv) 초기화 - 처음 환경 세팅 시에만 사용, 이후에는 주석 처리해서 사용
+# df2 = pd.DataFrame({'키워드' : [], '실제질문' : []})
+# df2.to_csv('voc.csv')
 
 # 챗봇 소개
 @app.route('/api/introBot', methods=['POST'])
@@ -73,7 +77,7 @@ def botStart():
     return responseBody
 
 
-# FAQ 재질문 처리
+# FAQ 재질문 처리(스킬 : FAQ재질문) - 폴백블록
 @app.route('/api/FAQ_reply', methods=['POST'])
 def FAQ_reply():
     body = request.get_json()  # 봇 시스템 요청 body(SkillPayload)
@@ -117,7 +121,7 @@ def FAQ_reply():
     return responseBody
 
 
-# FAQ 답변 처리
+# FAQ 답변 처리(스킬 : FAQ 재질문 처리)
 @app.route('/api/request_answer', methods=['POST'])
 def request_answer():
     body = request.get_json()
@@ -141,7 +145,13 @@ def request_answer():
                 ]
             }
         }
-    elif request_True == "예":
+    elif request_True == "예": # 여기에서 문의 내용 관련 기록 (CSV에 저장) : 키워드(summary), 실제질문(user_reply) 
+        # TODO : CSV 저장(코드 혹은 함수호출)
+        df2 = pd.read_csv('voc.csv')
+        # df2.loc[df1['rating'] == score, 'count'] += 1
+        df2=df2.append({'키워드' : 'summary' , '실제질문' : user_reply} , ignore_index=True) # summary(키워드) 받아오는 부분 구현 필요
+        df2.to_csv('voc.csv', index=False)
+        
         responseBody = {
             "version": "2.0",
             "template": {
@@ -186,7 +196,8 @@ def request_answer():
                         "label": "만족도 조사",
                         "messageText": "만족도 조사",
                         "action": "block",
-                        "blockId": blockIds[6]
+                        "blockId": blockIds[5] # 수정
+                        # "blockId": blockIds[6]
                     }
                 ]
             }
@@ -313,8 +324,15 @@ def CSAT_result():
     print(blockId)
 
     score = body['action']['clientExtra']['score']  # 만족도 조사에서 입력된 점수(int형)
+    print(score)
     count += 1  # 횟수 추가
-    total_score = (total_score + score) / count  # 평균 별점
+    total_score = (total_score * (count - 1) + score) / count # 평균 별점
+    
+    # TODO : CSV 저장(코드 혹은 함수호출)
+    df1 = pd.read_csv('rating.csv')
+    df1.loc[df1['rating'] == score, 'count'] += 1
+    df1.to_csv('rating.csv', index=False)
+    
     print(total_score)
     responseBody = {
         "version": "2.0",
@@ -363,7 +381,29 @@ def blockId():
     }
     return responseBody
 
+@app.route("/")
+def index():
+    return '<HTML><BODY><H1>hello world</H1></BODY></HTML>'
+
+@app.route('/result')
+def result():
+    temp_table=[]
+    temp_table2=[]
+    with open('rating.csv', 'r') as fi:
+        mydata = csv.reader(fi)
+        for row in mydata:
+            temp_table.append([item for item in row])
+            
+    with open('voc.csv', 'r') as fi:
+        mydata = csv.reader(fi)
+        for row in mydata:
+            temp_table2.append([item] for item in row)
+            
+            
+    return render_template('index.html', results=temp_table, vocs=temp_table2)
+
 
 if __name__ == '__main__':
     # debug mode : 운영 환경에서는 절대 사용X
     app.run(host='0.0.0.0', port=8000)
+    # app.run(host='0.0.0.0', port=5000)

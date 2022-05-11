@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html leng='en'>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewpoint" content="width=device-width, initial-scale=1.0">
+        <title>Title</title>
+        <link rel="stylesheet" href="{{url_for('static', filename='css/style.css')}}">
+    
+    </head>
+    <body>
+        <h1>별점</h1>
+        <table border=1>
+            {% for idx, rating, count in results %}
+            <tr>
+                <th>{{ rating }}</th>
+                <td>{{ count }}</td>
+            </tr>
+            {% endfor %}
+            
+        </table>
+            
+        <h1>사용자 문의</h1>
+        <table border=1>
+            {% for idx, keyword, reply in vocs %}
+            <tr>
+                <th>{{ keyword }}</th>
+                <td>{{ reply }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    
+    </body>
+</html>
