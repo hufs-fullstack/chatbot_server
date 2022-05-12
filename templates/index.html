@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="ko">
+<!-- <html lang="en" style="height: 100%"> -->
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>VOC 사용자 입력</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <!-- 차트 링크 -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+  <style>
+    body{
+      background-color: #d3d3d3;
+      margin:0;
+    }
+    h4 {
+      font-size:45px;
+      text-align: center;
+      margin: 0px;
+      padding: 20px;
+    }
+    table.type02 {
+      border-collapse: separate;
+      border-spacing: 0;
+      text-align: left;
+      line-height: 1.5;
+      border-top: 1px solid #ccc;
+      border-left: 1px solid #ccc;
+      margin : 40px 50px;
+    }
+    table.type02 th {
+      width: 150px;
+      padding: 5px;
+      font-weight: bold;
+      vertical-align: top;
+      border-right: 1px solid #ccc;
+      border-bottom: 1px solid #ccc;
+      border-top: 1px solid #fff;
+      border-left: 1px solid #fff;
+      background: #eee;
+    }
+    table.type02 td {
+      width: 800px;
+      padding: 5px;
+      vertical-align: top;
+      border-right: 1px solid #ccc;
+      border-bottom: 1px solid #ccc;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="row my-2">
+      <div class="col-12">
+        <h4> <strong> LG U+ 고객센터 챗봇 데이터 분석 </strong> </h4>
+      </div>
+    </div>
+
+    <div class="row my-4">
+      <div class="col-lg-6">
+        <div class="card">
+          <div class="card-body">
+            <canvas id="myChart1"></canvas>
+          </div>
+          <div class="card-footer text-center text-dark">
+            <h3>부정/긍정/중립 비율</h3>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-6">
+        <div class="card">
+          <div class="card-body">
+            <canvas id="myChart2"></canvas>
+          </div>
+          <div class="card-footer text-center text-dark">
+            <h3>고객 만족도 조사</h3>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row my-4">
+        <div class='col-md-12 text-center'>
+          <div class="card">
+            <div class="card-body">
+              <canvas id="myChart3"></canvas>
+            </div>
+            <div class="card-footer text-center text-dark">
+              <h3>FAQ 매칭 현황</h3>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    <div class="row my-2">
+      <div class="col-lg-12">
+        <div class="card">
+          <div class="card-body">
+            <table class="type02">
+              {% for idx, keyword, reply in vocs %}
+            <tr>
+                <th>{{ keyword }}</th>
+                <td>{{ reply }}</td>
+            </tr>
+              {% endfor %}
+            </table>
+          </div>
+          <div class="card-footer text-center text-dark">
+            <h3>고객 불만 사항 내용</h3>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 부트스트랩 -->
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+    integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+    crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+    integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+    crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+    integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+    crossorigin="anonymous"></script>
+
+  <!-- 차트 -->
+  <script>
+    var colors = ['#FF5050', '#FFAA28', '#FFD228', '#40A940','#646EFF','#6c757d'];
+    var faq_summary = ['SMS byte', '웹사이트 로그인 SMS', '전송결과는 성공이지만 수신자가 메세지를 못받음', 'MMS 클릭 기능', '비밀번호 변경 문자',
+                       '인증문자 수신자', '후불* 선불 변경', '전송중 또는 대기', '080수신거부' , '서버 메세지 발송', 'SMS 서버 이전',
+                        '발송결과는 성공* 수신자 문자 못받음', '중복된 번호', '메일 머지', 'MMS', 'SMS 1건 전송 방법', 'MMS 비용', '회원가입(서비스신청)']
+
+    //부정긍정중립 데이터
+    data1 = {
+      datasets: [{
+        backgroundColor: ['#FF5050','#40A940','#646EFF'],
+        data: {{emotions}}
+      }],
+      // 라벨의 이름이 툴팁처럼 마우스가 근처에 오면 나타남
+      labels: ['부정','긍정','중립'] };
+
+    //점수 데이터
+    data2 = {
+      datasets: [{
+        backgroundColor: colors.slice(0,5),
+        data: {{results}}
+      }],
+      labels: ['1점','2점','3점','4점','5점'] };
+
+     // 가운데 구멍이 없는 파이형 차트
+     var ctx1 = document.getElementById("myChart1");
+     var myPieChart = new Chart(ctx1, {
+       type: 'doughnut',
+       data: data1,
+       options: {}
+     });
+     var ctx2 = document.getElementById("myChart2");
+     var myDoughnutChart = new Chart(ctx2, {
+       type: 'doughnut',
+       data: data2, options: {}
+     });
+
+     // 가로막대 그래프
+     var ctx3 = document.getElementById('myChart3');
+     var myChart = new Chart(ctx3, {
+       type: 'horizontalBar',
+       data: {
+         labels: faq_summary,
+         datasets: [{
+           axis: 'y',
+           label: '문의 수',
+           data: {{faq_results}},
+           backgroundColor: [
+             'rgba(255, 99, 132, 0.2)',
+             'rgba(54, 162, 235, 0.2)',
+             'rgba(255, 206, 86, 0.2)',
+             'rgba(75, 192, 192, 0.2)',
+             'rgba(153, 102, 255, 0.2)',
+             'rgba(255, 159, 64, 0.2)',
+             'rgba(255, 205, 100, 0.2)',
+             'rgba(100, 105, 100, 0.2)',
+             'rgba(155, 15, 70, 0.2)',
+             'rgba(75, 125, 220, 0.2)',
+             'rgba(215, 105, 20, 0.2)',
+             'rgba(255, 135, 130, 0.2)',
+             'rgba(125, 75, 110, 0.2)',
+             'rgba(55, 225, 130, 0.2)',
+             'rgba(147, 125, 190, 0.2)',
+             'rgba(155, 45, 210, 0.2)',
+             'rgba(55, 105, 200, 0.2)',
+             'rgba(35, 25, 100, 0.2)'
+           ],
+           borderColor: [
+             'rgba(255, 99, 132, 1)',
+             'rgba(54, 162, 235, 1)',
+             'rgba(255, 206, 86, 1)',
+             'rgba(75, 192, 192, 1)',
+             'rgba(153, 102, 255, 1)',
+             'rgba(255, 159, 64, 1)',
+             'rgba(255, 205, 100, 1)',
+             'rgba(100, 105, 100, 1)',
+             'rgba(155, 15, 70, 1)',
+             'rgba(75, 125, 220, 1)',
+             'rgba(215, 105, 20, 1)',
+             'rgba(255, 135, 130, 1)',
+             'rgba(125, 75, 110, 1)',
+             'rgba(55, 225, 130, 1)',
+             'rgba(147, 125, 190, 1)',
+             'rgba(155, 45, 210, 1)',
+             'rgba(55, 105, 200, 1)',
+             'rgba(35, 25, 100, 1)'
+           ],
+           borderWidth: 1
+         }]
+       },
+       options: {
+       responsive: true,
+       tooltips: {
+           mode: 'index',
+           intersect: false,
+       },
+       hover: {
+           mode: 'nearest',
+           intersect: true
+       },
+       scales: {
+           xAxes: [{
+               display: true,
+           }],
+           yAxes: [{
+               display: true,
+               ticks: {
+                   autoSkip: false,
+               },
+           }]
+       }
+   }
+   });
+   </script>
+</body>
+
+ </html>
